@@ -181,10 +181,18 @@ open class NWWebSocket: WebSocketConnection {
             }
 
             if let error = error {
-                self.reportErrorOrDisconnection(error)
+                self.handleErrorWhileReceivingMessage(error)
             } else {
                 self.listen()
             }
+        }
+    }
+
+    private func handleErrorWhileReceivingMessage(_ error: NWError) {
+        if case .posix = error {
+            tearDownConnection(error: error)
+        } else {
+            reportErrorOrDisconnection(error)
         }
     }
 
